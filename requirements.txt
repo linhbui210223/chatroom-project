@@ -1,0 +1,12 @@
+#client
+python-socketio[client]
+requests
+
+
+#server
+python-socketio
+flask
+cryptography
+eventlet
+flask-socketio
+
