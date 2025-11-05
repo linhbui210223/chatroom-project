@@ -173,8 +173,13 @@ class ChatServer:
             self.send_to_client(sender_socket, confirm_msg)
         else:
             # Send file to specific user
-            if recipient in self.usernames:
-                recipient_socket = self.usernames[recipient]
+            with self.clients_lock:
+                if recipient in self.usernames:
+                    recipient_socket = self.usernames[recipient]
+                else:
+                    recipient_socket = None
+            
+            if recipient_socket:
                 file_msg = {
                     'type': 'file',
                     'sender': username,
@@ -188,6 +193,10 @@ class ChatServer:
                 # Send confirmation to sender
                 confirm_msg = f"[{timestamp}] File '{filename}' sent to {recipient}"
                 self.send_to_client(sender_socket, confirm_msg)
+            else:
+                # Recipient not found
+                error_msg = f"[{timestamp}] User '{recipient}' not found"
+                self.send_to_client(sender_socket, error_msg)
     
     def broadcast_message(self, message, exclude_socket=None):
         """Broadcast a text message to all connected clients."""
@@ -226,19 +235,21 @@ class ChatServer:
     
     def send_private_message(self, sender, recipient, message):
         """Send a private message to a specific user."""
-        if recipient in self.usernames:
-            recipient_socket = self.usernames[recipient]
-            self.send_to_client(recipient_socket, message)
-            
-            # Send confirmation to sender
-            sender_socket = self.usernames[sender]
-            confirm_msg = f"[{datetime.now().strftime('%H:%M:%S')}] [PRIVATE to {recipient}]: {message.split(': ', 1)[-1]}"
-            self.send_to_client(sender_socket, confirm_msg)
-        else:
-            # User not found
-            sender_socket = self.usernames[sender]
-            error_msg = f"[SERVER] User '{recipient}' not found"
-            self.send_to_client(sender_socket, error_msg)
+        with self.clients_lock:
+            if recipient in self.usernames:
+                recipient_socket = self.usernames[recipient]
+                self.send_to_client(recipient_socket, message)
+                
+                # Send confirmation to sender
+                sender_socket = self.usernames[sender]
+                confirm_msg = f"[{datetime.now().strftime('%H:%M:%S')}] [PRIVATE to {recipient}]: {message.split(': ', 1)[-1]}"
+                self.send_to_client(sender_socket, confirm_msg)
+            else:
+                # User not found
+                sender_socket = self.usernames.get(sender)
+                if sender_socket:
+                    error_msg = f"[SERVER] User '{recipient}' not found"
+                    self.send_to_client(sender_socket, error_msg)
     
     def send_online_users(self, client_socket):
         """Send list of online users to a client."""
