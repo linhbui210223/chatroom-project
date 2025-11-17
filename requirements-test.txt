@@ -1,0 +1,35 @@
+# Testing dependencies for the chatroom application
+
+# Core testing framework
+pytest>=7.4.0
+pytest-mock>=3.11.1
+pytest-asyncio>=0.21.1
+pytest-cov>=4.1.0
+
+# Additional testing utilities
+unittest-mock>=1.0.0
+coverage>=7.2.0
+
+# For testing async operations (Socket.IO)
+pytest-timeout>=2.1.0
+
+# For testing GUI components (if needed)
+pytest-qt>=4.2.0
+
+# For HTTP testing (if you add REST endpoints)
+requests-mock>=1.11.0
+
+# For database testing
+pytest-sqlite>=0.2.0
+
+# For generating test data
+faker>=19.3.0
+
+# For testing file operations
+pytest-tempdir>=2019.10.12
+
+# Memory profiling during tests
+memory-profiler>=0.61.0
+
+# For testing with different Python versions locally
+tox>=4.6.0

@@ -25,7 +25,7 @@ from server.crypto_utils import (
 # Load server private key
 public_key = load_rsa_public_key("public_key.pem")
 
-FONT = "Roboto"
+FONT = "Lato"
 SERVER_API_URL = "http://localhost:8080"
 CHUNK_SIZE = 49152 # 48KB
 
@@ -273,7 +273,7 @@ class ChatClientGUI:
         title_text1 = tk.Label(left_frame, text="Welcome to", font=(FONT, 24), fg="white", bg="dark green")
         title_text1.pack(anchor="w")
         
-        title_text2 = tk.Label(left_frame, text="ChatSpace", font=(FONT, 24, "bold"), fg="DarkGoldenrod1", bg="dark green")
+        title_text2 = tk.Label(left_frame, text="ChatSpace 💬", font=(FONT, 24, "bold"), fg="DarkGoldenrod1", bg="dark green")
         title_text2.pack(anchor="w")
         
         # Username row
@@ -395,8 +395,19 @@ class ChatClientGUI:
             self.send_message()
             self.entry_box.delete("1.0", tk.END)
             self.entry_var.set("")
-        self.send_btn = tk.Button(self.Window, text="➤", bg="DarkGoldenrod1", font=(FONT, 16), command=send_and_clear)
+        self.send_btn = tk.Button(self.Window, text="Send 🚀", bg="DarkGoldenrod1", font=(FONT, 16), command=send_and_clear)
         self.send_btn.grid(row=2, column=1, sticky="w")
+
+        # Move buttons to row 2, column 2 (next to send button)
+        button_frame = tk.Frame(self.Window)
+        button_frame.grid(row=2, column=2, sticky="w", padx=10, pady=5)
+
+        # File and Emoji Buttons
+        self.file_btn = tk.Button(button_frame, text="Send File ⬆️", font=(FONT, 16), command=self.select_file)
+        self.file_btn.pack(side="left", padx=(0, 10))
+
+        self.emoji_btn = tk.Button(button_frame, text="😃", font=(FONT, 16), command=self.show_emoji_picker)
+        self.emoji_btn.pack(side="left")
 
         # Bind Enter key to send message (and prevent newline)
         def send_and_prevent_newline(_):
@@ -409,13 +420,6 @@ class ChatClientGUI:
 
         button_frame = tk.Frame(self.Window)
         button_frame.grid(row=3, column=0, columnspan=2, sticky="w", padx=10, pady=5)
-
-        # File and Emoji Buttons
-        self.file_btn = tk.Button(button_frame, text="⬆️", font=(FONT, 16), command=self.select_file)
-        self.file_btn.pack(side="left", padx=(0, 10))  # Right padding of 10
-
-        self.emoji_btn = tk.Button(button_frame, text="😃", font=(FONT, 16), command=self.show_emoji_picker)
-        self.emoji_btn.pack(side="left")
 
         # Suggestion label - moved to row 4 and spans both columns
         self.suggestion_label = tk.Label(
@@ -465,8 +469,8 @@ class ChatClientGUI:
         
         tab_control.add(smileys_tab, text="😊 Smileys")
         tab_control.add(animals_tab, text="🐶 Animals")
-        tab_control.add(foods_tab, text="🍎 Foods")
-        tab_control.add(symbols_tab, text="💖 Symbols")
+        tab_control.add(foods_tab, text="🍊 Foods")
+        tab_control.add(symbols_tab, text="🩷 Symbols")
         tab_control.pack(expand=1, fill="both")
         
         self.populate_emoji_tab(smileys_tab, [
@@ -498,17 +502,6 @@ class ChatClientGUI:
             "🔞", "📵", "❗", "❓", "💯", "✅", "❎"
         ])
         
-        # # Add search functionality
-        # search_frame = tk.Frame(self.emoji_window)
-        # search_frame.pack(fill="x", padx=5, pady=5)
-        
-        # search_var = tk.StringVar()
-        # search_entry = tk.Entry(search_frame, textvariable=search_var, font=(FONT, 12))
-        # search_entry.pack(side="left", fill="x", expand=True)
-        
-        # search_btn = tk.Button(search_frame, text="Search", command=lambda: self.search_emojis(search_var.get()))
-        # search_btn.pack(side="right", padx=5)
-        # Add search box inside emoji frame (at top)
         search_frame = tk.Frame(self.emoji_frame)
         search_frame.pack(fill="x", padx=5, pady=5)
 
@@ -738,6 +731,9 @@ class ChatClientGUI:
             log_event("client", "error_upload_error", f"Cannot display the upload error for {filename}: {e}") 
     
     def update_progress(self, filename, chunk_num, total_chunks):
+        self.Window.after(0, self._update_progress_ui, filename, chunk_num, total_chunks)
+
+    def _update_progress_ui(self, filename, chunk_num, total_chunks):
         try:
             bar_info = self.progress_n_index.get(filename)
             
@@ -748,26 +744,32 @@ class ChatClientGUI:
 
             if percent == 100:
                 self.chat_box.config(state="normal")
-                
                 progressbar_pos = bar_info["index"]
                 
                 def finalize_upload():
-                    # Check if retry was already triggered
                     if filename not in self.upload_confirmation:
-                        return  # already handled
+                        return
 
                     try:
-                        bar_info["bar"].destroy() # Remove the progress bar
-                        self.chat_box.delete(progressbar_pos) # Delete window element
+                        if (bar_info and "bar" in bar_info and 
+                            bar_info["bar"] and bar_info["bar"].winfo_exists()):
+                            bar_info["bar"].destroy()
+                            self.chat_box.delete(progressbar_pos)
+                    except tk.TclError:
+                        pass
                     except Exception as e:
                         print(f"Error {e}")
                         log_event("client", "progress_bar_error", f"Error destroying progress bar for {filename}: {e}")
                     
-                    # Insert the download button
-                    download_button = tk.Button(self.chat_box, text = "⬇", command = lambda : self.ask_download(filename), 
-                                        bg="dark green", fg="white", relief="flat", width= 2, 
-                                        padx=0, pady=0, font=(FONT, 11))
-                    self.chat_box.window_create(progressbar_pos, window = download_button, pady=3)
+                    # Insert download button
+                    download_button = tk.Button(self.chat_box, text="⬇", command=lambda: self.ask_download(filename), 
+                                        bg="midnight blue", fg="black", relief="flat", width=2, 
+                                        padx=0, pady=0, font=(FONT, 11),   # Dark gray when clicked
+                                        activeforeground="white",    
+                                        cursor="hand2"               
+                    )
+            
+                    self.chat_box.window_create(progressbar_pos, window=download_button, pady=3)
                     
                     self.chat_box.config(state="disabled")
                     self.chat_box.yview(tk.END)
@@ -775,16 +777,18 @@ class ChatClientGUI:
                     self.progress_n_index.pop(filename, None)
                     self.upload_confirmation.pop(filename, None)
                 
-                # Only check the first time progress reaches 100% -> only schedule once
                 if filename not in self.upload_confirmation:
-                    self.upload_confirmation[filename] = self.root.after(2000, finalize_upload) # Delay 2s to wait for 'retry_sending' signal from server
+                    self.upload_confirmation[filename] = self.Window.after(2000, finalize_upload)
             else:
-                bar_info["bar"]["value"] = percent
+                # Check if progress bar still exists before updating
+                if ("bar" in bar_info and bar_info["bar"] and 
+                    bar_info["bar"].winfo_exists()):
+                    bar_info["bar"]["value"] = percent
             
         except Exception as e:
-            print(f"Cannot upload the progress bar of {filename}")
+            print(f"Cannot update the progress bar of {filename}: {e}")
             log_event("client", "progress_bar_update_error", f"Cannot update progress bar for {filename}: {e}")
-    
+        
     def display_progress_bar(self, msg_type, sender, timestamp, filename):
         self.chat_box.config(state="normal")
         tag = "blue" if msg_type == "Global" else "orange"
