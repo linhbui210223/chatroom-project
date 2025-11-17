@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 import os
 import base64
 import threading
@@ -26,7 +25,7 @@ from server.crypto_utils import (
 # Load server private key
 public_key = load_rsa_public_key("public_key.pem")
 
-FONT = "Georgia"
+FONT = "Roboto"
 SERVER_API_URL = "http://localhost:8080"
 CHUNK_SIZE = 49152 # 48KB
 
@@ -42,7 +41,7 @@ def center_window(window, width, height):
 
 def setup_window(window, title, width, height):
     window.title(title)
-    window.resizable(True, True)  # Allow window to be resizable
+    window.resizable(True, True)  # allow resize 
     window.configure(width=width, height=height)
     center_window(window, width, height)
 
@@ -257,39 +256,52 @@ class ChatClientGUI:
         return True
 
     def setup_login_screen(self):
-        self.login = tk.Toplevel(bg="midnight blue")
-        setup_window(self.login, "FUV Chatroom Login", 680, 230)
+        self.login = tk.Toplevel(bg="dark green")
+        setup_window(self.login, "ChatSpace Login", 680, 230)
         
         # Initialize frames
-        content_frame = tk.Frame(self.login, bg="midnight blue")
+        content_frame = tk.Frame(self.login, bg="dark green")
         content_frame.place(relx=0.5, rely=0.45, anchor="center")
         
-        left_frame = tk.Frame(content_frame, bg="midnight blue")
+        left_frame = tk.Frame(content_frame, bg="dark green")
         left_frame.grid(row=0, column=0, padx=(0, 25), sticky="e")
 
-        right_frame = tk.Frame(content_frame, bg="midnight blue")
+        right_frame = tk.Frame(content_frame, bg="dark green")
         right_frame.grid(row=0, column=1, sticky="w")
         
         # Left side: Title
-        title_text1 = tk.Label(left_frame, text="Welcome to", font=(FONT, 24), fg="white", bg="midnight blue")
+        title_text1 = tk.Label(left_frame, text="Welcome to", font=(FONT, 24), fg="white", bg="dark green")
         title_text1.pack(anchor="w")
         
-        title_text2 = tk.Label(left_frame, text="FUV CHATROOM", font=(FONT, 24, "bold"), fg="DarkGoldenrod1", bg="midnight blue")
+        title_text2 = tk.Label(left_frame, text="ChatSpace", font=(FONT, 24, "bold"), fg="DarkGoldenrod1", bg="dark green")
         title_text2.pack(anchor="w")
         
         # Username row
-        username_text = tk.Label(right_frame, text="Username:", font=(FONT, 13), fg="white", bg="midnight blue")
+        username_text = tk.Label(right_frame, text="Username:", font=(FONT, 13), fg="white", bg="dark green")
         username_text.grid(row=0, column=0, sticky="e", padx=(0, 5))
         
         self.entry_username = tk.Entry(right_frame, font=(FONT, 13), width=12)
         self.entry_username.grid(row=0, column=1)
         
         
-        # Arrow button (">")
-        self.button = tk.Button(content_frame, text=">", font=(FONT, 9, "bold"), width=2, bg="DarkGoldenrod1", fg="midnight blue",
-                                command=lambda: self.validate_username(self.entry_username.get()))
-        self.button.grid(row=0, column=2, padx=(10, 0))
-        
+        # Arrow button
+        self.button = tk.Button(
+            content_frame, 
+            text="→", 
+            font=(FONT, 14, "bold"), 
+            width=3, 
+            height=1,
+            bg="#FFD700",  # Gold color
+            fg="#013220",  # Dark green text
+            relief="raised",
+            borderwidth=2,
+            activebackground="#FFA500",  # Orange when clicked
+            activeforeground="white",
+            cursor="hand2",  # Hand cursor on hover
+            command=lambda: self.validate_username(self.entry_username.get())
+        )
+        self.button.grid(row=0, column=2, padx=(10, 0))    
+
         # Set focus
         self.entry_username.focus_set()
         
@@ -311,22 +323,34 @@ class ChatClientGUI:
 
     def setup_chatroom_screen(self):
         self.Window.deiconify()
-        setup_window(self.Window, "FUV Chatroom", 900, 600)
+        setup_window(self.Window, "ChatSpace", 900, 600)
 
-        # Configure grid weights for resizing
+        self.Window.configure(bg="#F5F5F5")  # Smoke white
+
+
+        # grid weights 
         self.Window.grid_rowconfigure(1, weight=1)
         self.Window.grid_columnconfigure(0, weight=3)
         self.Window.grid_columnconfigure(1, weight=0)
         self.Window.grid_columnconfigure(2, weight=1)
 
         # Top layout
-        self.chat_label = tk.Label(self.Window, text="FUV Chatroom", bg="midnight blue", fg="white", font=(FONT, 20, "bold"))
+        self.chat_label = tk.Label(
+            self.Window, 
+            text="ChatSpace",  
+            bg="#013220",  # Very dark green
+            fg="white",  
+            font=(FONT, 20, "bold"), 
+            # relief="raised",  #border effect: "flat", "raised", "sunken", "ridge", "groove"
+            # borderwidth=3  
+        )
+
         self.chat_label.grid(row=0, column=0, columnspan=2, sticky="ew")
 
-        self.user_label = tk.Label(self.Window, text="You: " + self.username, font=(FONT, 14, "bold"))
+        self.user_label = tk.Label(self.Window, text="Username: " + self.username, font=(FONT, 14, "bold"))
         self.user_label.grid(row=3, column=2, sticky="e", padx=10)
         
-        self.active_label = tk.Label(self.Window, text="Active", bg="midnight blue", fg="white", font=(FONT, 20, "bold"))
+        self.active_label = tk.Label(self.Window, text="Online users", bg="#013220", fg="white", font=(FONT, 20, "bold"))
         self.active_label.grid(row=0, column=2, sticky="ew")
 
         # Chat box
@@ -335,13 +359,15 @@ class ChatClientGUI:
                         width=80, 
                         height=28, 
                         state="disabled", 
-                        font=(FONT, 14)  
+                        font=(FONT, 14),  
+                        relief="sunken", 
+
                     )
         self.chat_box.grid(row=1, column=0, columnspan=2, padx=10, pady=5, sticky="nsew")
 
         # Active user list
         self.user_list = tk.Listbox(self.Window, width=28, height=28, font=(FONT, 14), 
-                                    selectbackground="light blue", selectforeground="midnight blue")
+                                    selectbackground="light blue", selectforeground="dark green")
         self.user_list.grid(row=1, column=2, padx=5, pady=5, sticky="nsew")
         self.user_list.bind("<<ListboxSelect>>", self.on_user_selected)
         
@@ -384,11 +410,11 @@ class ChatClientGUI:
         button_frame = tk.Frame(self.Window)
         button_frame.grid(row=3, column=0, columnspan=2, sticky="w", padx=10, pady=5)
 
-        # File and Emoji Buttons - now inside the button frame
-        self.file_btn = tk.Button(button_frame, text="📎", font=(FONT, 16), command=self.select_file)
+        # File and Emoji Buttons
+        self.file_btn = tk.Button(button_frame, text="⬆️", font=(FONT, 16), command=self.select_file)
         self.file_btn.pack(side="left", padx=(0, 10))  # Right padding of 10
 
-        self.emoji_btn = tk.Button(button_frame, text="😊", font=(FONT, 16), command=self.show_emoji_picker)
+        self.emoji_btn = tk.Button(button_frame, text="😃", font=(FONT, 16), command=self.show_emoji_picker)
         self.emoji_btn.pack(side="left")
 
         # Suggestion label - moved to row 4 and spans both columns
@@ -438,12 +464,11 @@ class ChatClientGUI:
         symbols_tab = ttk.Frame(tab_control)
         
         tab_control.add(smileys_tab, text="😊 Smileys")
-        tab_control.add(animals_tab, text="🐻 Animals")
+        tab_control.add(animals_tab, text="🐶 Animals")
         tab_control.add(foods_tab, text="🍎 Foods")
         tab_control.add(symbols_tab, text="💖 Symbols")
         tab_control.pack(expand=1, fill="both")
         
-        # Populate each tab with emojis
         self.populate_emoji_tab(smileys_tab, [
             "😀", "😃", "😄", "😁", "😆", "😅", "😂", "🤣",
             "😊", "😇", "🙂", "🙃", "😉", "😌", "😍", "🥰",
@@ -740,7 +765,7 @@ class ChatClientGUI:
                     
                     # Insert the download button
                     download_button = tk.Button(self.chat_box, text = "⬇", command = lambda : self.ask_download(filename), 
-                                        bg="midnight blue", fg="white", relief="flat", width= 2, 
+                                        bg="dark green", fg="white", relief="flat", width= 2, 
                                         padx=0, pady=0, font=(FONT, 11))
                     self.chat_box.window_create(progressbar_pos, window = download_button, pady=3)
                     
@@ -773,7 +798,7 @@ class ChatClientGUI:
         progressbar_pos = self.chat_box.index(bar)      
         self.chat_box.insert(tk.END, "\n")
         
-        self.chat_box.tag_config("blue", foreground="midnight blue")
+        self.chat_box.tag_config("blue", foreground="dark green")
         self.chat_box.tag_config("orange", foreground="darkorange")
         
         # Store the position of the progress bar for later replacing with the download button
@@ -834,12 +859,12 @@ class ChatClientGUI:
         self.chat_box.insert(tk.END, formatted, tag)
         
         download_button = tk.Button(self.chat_box, text = "⬇", command = lambda : self.ask_download(filename), 
-                                    bg="midnight blue", fg="white", relief="flat", width= 2, 
+                                    bg="dark green", fg="white", relief="flat", width= 2, 
                                     padx=0, pady=0, font=(FONT, 11))
         self.chat_box.window_create(tk.END, window = download_button, pady=3)
         self.chat_box.insert(tk.END, "\n")
         
-        self.chat_box.tag_config("blue", foreground="midnight blue")
+        self.chat_box.tag_config("blue", foreground="dark green")
         self.chat_box.tag_config("orange", foreground="darkorange")
         self.chat_box.config(state="disabled")
         self.chat_box.yview(tk.END)
@@ -974,11 +999,11 @@ class ChatClientGUI:
         self.button_frame.grid(row=1, column=0, pady=(5, 10))
         
         self.private_file = tk.Button(self.button_frame, text="File", font=(FONT, 10), width=10, 
-                                      bg= "light blue", fg="midnight blue", command=pfile)
+                                      bg= "light blue", fg="dark green", command=pfile)
         self.private_file.grid(row=0, column=0, padx=5)
         
         self.private_message = tk.Button(self.button_frame, text="Message", font=(FONT, 10), width=10, 
-                                         bg= "light blue", fg="midnight blue", command=pmessage)
+                                         bg= "light blue", fg="dark green", command=pmessage)
         self.private_message.grid(row=0, column=1, padx=5)
         
         # Exit
