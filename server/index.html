@@ -1,16 +1,48 @@
 <!DOCTYPE html>
 <html>
-  <head>
+<head>
     <title>Socket.IO Test</title>
     <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
-  </head>
-  <body>
+</head>
+<body>
     <h1>Socket.IO Test Page</h1>
+    <div id="status">Disconnected</div>
+    <input type="text" id="messageInput" placeholder="Type a message...">
+    <button onclick="sendMessage()">Send</button>
+    <div id="messages"></div>
+
     <script>
-      const socket = io();
-      socket.on('connect', () => {
-        console.log('Connected to server');
-      });
+        const socket = io();
+        const statusDiv = document.getElementById('status');
+        const messagesDiv = document.getElementById('messages');
+
+        socket.on('connect', () => {
+            console.log('Connected to server');
+            statusDiv.textContent = 'Connected';
+            statusDiv.style.color = 'green';
+        });
+
+        socket.on('disconnect', () => {
+            statusDiv.textContent = 'Disconnected';
+            statusDiv.style.color = 'red';
+        });
+
+        // Test receiving messages
+        socket.on('incoming_global_message', (data) => {
+            messagesDiv.innerHTML += `<p>${data.sender}: ${data.message}</p>`;
+        });
+
+        function sendMessage() {
+            const input = document.getElementById('messageInput');
+            const message = input.value;
+            if (message) {
+                socket.emit('global_message', {
+                    message: message,
+                    sender: 'WebTestClient'
+                });
+                input.value = '';
+            }
+        }
     </script>
-  </body>
+</body>
 </html>

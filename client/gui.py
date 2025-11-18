@@ -237,7 +237,7 @@ class ChatClientGUI:
         if not username:
             messagebox.showwarning("Warning", "Please input a username.")
             return False
-        elif len(username) > 9:
+        elif len(username) > 15:
             messagebox.showwarning("Warning", "Username is too long. Please use a shorter username.")
             return False
         elif username.count(" ") > 0:
@@ -341,8 +341,10 @@ class ChatClientGUI:
             bg="#013220",  # Very dark green
             fg="white",  
             font=(FONT, 20, "bold"), 
-            # relief="raised",  #border effect: "flat", "raised", "sunken", "ridge", "groove"
-            # borderwidth=3  
+            relief="flat",  # Change to flat (no 3D effect)
+            borderwidth=0,   # Remove border width
+            highlightbackground="white",  # White border color
+            highlightthickness=3  # Border thickness
         )
 
         self.chat_label.grid(row=0, column=0, columnspan=2, sticky="ew")
@@ -350,7 +352,11 @@ class ChatClientGUI:
         self.user_label = tk.Label(self.Window, text="Username: " + self.username, font=(FONT, 14, "bold"))
         self.user_label.grid(row=3, column=2, sticky="e", padx=10)
         
-        self.active_label = tk.Label(self.Window, text="Online users", bg="#013220", fg="white", font=(FONT, 20, "bold"))
+        self.active_label = tk.Label(self.Window, text="👥 Online users", bg="#013220", fg="white", font=(FONT, 20, "bold"),            relief="flat",  # Change to flat (no 3D effect)
+            borderwidth=0,   # Remove border width
+            highlightbackground="white",  # White border color
+            highlightthickness=3  # Border thickness
+            )
         self.active_label.grid(row=0, column=2, sticky="ew")
 
         # Chat box
@@ -649,6 +655,7 @@ class ChatClientGUI:
             
     def send_file_w_progressbar(self, path, recipient = "Global"):      
         try:
+                    # EXTRACT FILE METADATA
             filename = os.path.basename(path)
             f_size_b = os.path.getsize(path)
             timestamp = datetime.now().strftime("%H:%M:%S")
@@ -678,6 +685,8 @@ class ChatClientGUI:
                         break
                     hash_algo.update(chunk)
 
+
+                    #ENCODE CHUNK FOR TRANSMISSION    
                     encoded_data = base64.b64encode(chunk).decode()
                     self.sio.emit('upload_chunk', {
                                   'filename': filename,
@@ -952,6 +961,68 @@ class ChatClientGUI:
         self.chat_box.config(state="disabled")
         self.chat_box.yview(tk.END)
 
+    # def display_message(self, msg_type, sender, message, timestamp):
+    #     self.chat_box.config(state="normal")
+        
+    #     # 🎨 MAINTAIN ORIGINAL TAG LOGIC
+    #     tag = "blue" if msg_type == "Global" else "orange"
+        
+    #     # Create message bubble effect
+    #     is_own_message = sender == self.username or sender.startswith("To ")
+        
+    #     if is_own_message:
+    #         # Right-aligned bubble for own messages
+    #         bubble_tag = f"own_bubble_{tag}"  # ← Combine with original tag
+    #         self.chat_box.insert(tk.END, "                    ")  # Right padding
+            
+    #         # 🔵 USE ORIGINAL METADATA FORMAT BUT WITH BUBBLE
+    #         metadata = f"({msg_type}) ({sender}) ({timestamp}): "
+    #         self.chat_box.insert(tk.END, metadata, tag)  # ← Original tag colors
+    #         self.chat_box.insert(tk.END, f"{message}", bubble_tag)
+    #         self.chat_box.insert(tk.END, "\n")
+            
+    #         # Configure own message bubble with original colors
+    #         if tag == "blue":
+    #             bg_color = "#E3F2FD"  # Light blue for global messages
+    #         else:
+    #             bg_color = "#FFF3E0"  # Light orange for private messages
+                
+    #         self.chat_box.tag_config(bubble_tag, 
+    #                                 background=bg_color,
+    #                                 relief="solid", 
+    #                                 borderwidth=1,
+    #                                 justify="right")
+    #     else:
+    #         # Left-aligned bubble for others
+    #         bubble_tag = f"other_bubble_{tag}_{hash(sender) % 3}"
+            
+    #         # 🔵 USE ORIGINAL METADATA FORMAT
+    #         metadata = f"({msg_type}) ({sender}) ({timestamp}): "
+    #         self.chat_box.insert(tk.END, metadata, tag)  # ← Original tag colors
+    #         self.chat_box.insert(tk.END, f"{message}", bubble_tag)
+    #         self.chat_box.insert(tk.END, "\n\n")
+            
+    #         # Configure other users' message style with original color scheme
+    #         if tag == "blue":
+    #             # Global messages - blue theme variations
+    #             colors = ["#F0F8FF", "#E6F3FF", "#CCE7FF"]  # Light blue shades
+    #         else:
+    #             # Private messages - orange theme variations  
+    #             colors = ["#FFF8F0", "#FFEFDD", "#FFE0B8"]  # Light orange shades
+                
+    #         selected_color = colors[hash(sender) % len(colors)]
+    #         self.chat_box.tag_config(bubble_tag, 
+    #                                 background=selected_color,
+    #                                 relief="solid", 
+    #                                 borderwidth=1)
+        
+    #     # 🎨 MAINTAIN ORIGINAL TAG CONFIGURATIONS
+    #     self.chat_box.tag_config("blue", foreground="#0229A7")     # Original blue
+    #     self.chat_box.tag_config("orange", foreground="darkorange") # Original orange
+        
+    #     self.chat_box.config(state="disabled")
+    #     self.chat_box.yview(tk.END)
+
     def display_system_message(self, message):
         if not hasattr(self, 'chat_box'):
             print("Chat box not initialized.")
@@ -1057,7 +1128,7 @@ class ChatClientGUI:
         # Clear the current list
         self.user_list.delete(0, tk.END)
         for user in users:
-            self.user_list.insert(tk.END, f"👤 {user}")
+            self.user_list.insert(tk.END, f"🟢 {user}")
 
     def graceful_exit(self):
         if messagebox.askokcancel("Quit", "Do you want to quit?"):
