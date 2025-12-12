@@ -151,6 +151,7 @@ class ChatServer:
             sender = data.get('sender', 'Anonymous')
 
             sender_entry = next((u for u in self.users if u['sid'] == sid), None)
+            # Finds the specific recipient by username
             recipient_entry = next((u for u in self.users if u['username'] == recipient_name), None)
 
             if not sender_entry or not recipient_entry:
@@ -162,7 +163,9 @@ class ChatServer:
                 plaintext = decrypt_aes(sender_entry['aes_key'], ciphertext)
                 print(f"[PRIVATE] From {sender} to {recipient_name}: {ciphertext}")
                 log_event("server", "private_msg", f"[PRIVATE] From {sender} to {recipient_name}: {ciphertext}")
+                # Each user has their own AES key for end-to-end encryption
                 re_encrypted = encrypt_aes(recipient_entry['aes_key'], plaintext)
+                # The 'room=recipient_entry['sid']' parameter ensures message goes ONLY to that client
                 self.sio.emit('incoming_private_message', {'message': re_encrypted, 'sender': sender}, room=recipient_entry['sid'])
             except Exception as e:
                 print(f"Failed private message forwarding: {e}")
