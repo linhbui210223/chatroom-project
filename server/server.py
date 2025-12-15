@@ -6,7 +6,7 @@ import eventlet
 import hashlib
 
 from flask import Flask, render_template_string
-from crypto_utils import load_rsa_private_key, decrypt_rsa, decrypt_aes, encrypt_aes
+from encryption import load_rsa_private_key, decrypt_rsa, decrypt_aes, encrypt_aes
 
 # Add parent directory to path for module import
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))

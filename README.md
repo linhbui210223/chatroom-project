@@ -138,7 +138,7 @@ chatroom-project/
 │   └── public_key.pem          # RSA public key for encryption
 ├── server/
 │   ├── server.py               # Flask Socket.IO server
-│   ├── crypto_utils.py         # Encryption/decryption utilities
+│   ├── encryption.py         # Encryption/decryption utilities
 │   ├── private_key.pem         # RSA private key (generated)
 │   └── upload_files/           # File storage directory
 ├── logs/
