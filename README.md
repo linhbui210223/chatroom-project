@@ -1,6 +1,6 @@
 # ChatSpace - Encrypted Real-Time Communication Platform
 
-A secure, feature-rich real-time messaging application developed in Python, offering end-to-end encryption, dual messaging modes, multimedia file transfer, emoji integration, and an intuitive graphical interface.
+A secure, real-time messaging application developed in Python, offering end-to-end encryption, dual messaging modes, multimedia file transfer, emoji integration, and an intuitive graphical interface.
 
 ---
 
@@ -513,18 +513,7 @@ I'm happy 😊 and excited 🎉
 
 ---
 
-## Performance Analysis
-
-### Strengths
-
-| Aspect | Details |
-|--------|---------|
-| **Security** | Military-grade AES-256 encryption with RSA key exchange |
-| **Usability** | Intuitive GUI with zero-configuration client setup |
-| **Reliability** | Comprehensive error handling with automatic recovery |
-| **Extensibility** | Modular architecture supporting feature additions |
-| **Transparency** | SQLite logging for complete audit trail |
-| **Real-time** | Sub-second message delivery with Socket.IO |
+## Performance
 
 ### Current Limitations
 
@@ -549,44 +538,29 @@ I'm happy 😊 and excited 🎉
 | User join/leave propagation | 15-25ms | N/A |
 | Key exchange (RSA) | 20-30ms | Once per session |
 
+
 ---
+## Development Roadmap (Future Work)
 
-## Development Roadmap
+### Performance & Architecture
+- Async/await migration (asyncio) for improved scalability
+- Connection pooling and WebSocket compression
+- Optimized file chunking and CDN integration
 
-### Phase 1: Foundation Enhancement (Q1 2026)
-- [ ] Migrate to async/await architecture (asyncio)
-- [ ] Implement connection pooling
-- [ ] Add WebSocket compression
-- [ ] Optimize file chunking algorithm
+### Feature Enhancements
+- Voice messages, screen sharing, and message reactions
+- Rich text formatting and group chat management
+- Full-text search and chat history export (PDF/TXT)
 
-### Phase 2: Feature Expansion (Q2 2026)
-- [ ] Voice message support
-- [ ] Screen sharing capability
-- [ ] Message reactions and replies
-- [ ] Rich text formatting (bold, italic, code blocks)
-- [ ] Group chat creation and management
+### Platform Expansion
+- Web client (React/Vue.js) and mobile apps (React Native)
+- Desktop bundling (PyInstaller) with dark mode support
+- Customizable UI themes
 
-### Phase 3: Platform Modernization (Q3 2026)
-- [ ] Web client (React/Vue.js)
-- [ ] Mobile apps (React Native)
-- [ ] Desktop app bundling (PyInstaller)
-- [ ] Dark mode theme
-- [ ] Customizable UI themes
-
-### Phase 4: Enterprise Features (Q4 2026)
-- [ ] User authentication system (JWT)
-- [ ] Role-based access control
-- [ ] Message history persistence
-- [ ] Full-text search
-- [ ] Export chat history (PDF, TXT)
-- [ ] Admin dashboard
-
-### Phase 5: Cloud Deployment (2027)
-- [ ] Docker containerization
-- [ ] Kubernetes orchestration
-- [ ] Load balancing
-- [ ] CDN integration for file delivery
-- [ ] Horizontal scaling support
+### Enterprise Capabilities
+- JWT authentication and role-based access control
+- Message persistence and admin dashboard
+- Docker/Kubernetes deployment with load balancing
 
 ---
 
@@ -629,60 +603,3 @@ eventlet==0.33.3
 2. Cryptography in Python: https://cryptography.io/
 3. Flask-SocketIO Guide: https://flask-socketio.readthedocs.io/
 4. AES Encryption Best Practices: NIST SP 800-38A
-
----
-
-## License
-
-This project is released under the **MIT License**.
-
-```
-Copyright (c) 2025 ChatSpace Development Team
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
-```
-
----
-
-## Contributing
-
-We welcome contributions! Please follow these guidelines:
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit changes (`git commit -m 'Add AmazingFeature'`)
-4. Push to branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
-
-### Code Standards
-- Follow PEP 8 style guide
-- Add docstrings to all functions
-- Write unit tests for new features
-- Update documentation as needed
-
----
-
-## Support
-
-For questions, issues, or suggestions:
-
-- **GitHub Issues**: [Report a bug](https://github.com/nami-macos/chatroom-project/issues)
-- **Email**: nami@example.com
-- **Documentation**: [Wiki](https://github.com/nami-macos/chatroom-project/wiki)
-
