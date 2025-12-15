@@ -567,7 +567,7 @@ I'm happy 😊 and excited 🎉
 ## Credits & Resources
 
 ### Academic Foundation
-This project was developed as part of **Independent Study in Computer Networks - FUV Summer 2025**, building upon principles from:
+This project was developed as part of **Independent Study in Computer Networks - FUV Fall 2025**, building upon principles from:
 
 - **Kurose, J. F., & Ross, K. W.** (2021). *Computer Networking: A Top-Down Approach* (8th ed.). Pearson.
 
